@@ -1,101 +1,161 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { useTheme } from "next-themes";
+import { Github, Linkedin, Moon, Sun } from "lucide-react"; // Importando os ícones para o modo escuro e claro
+import { useLanguage } from "@/providers/LanguageProvider";
+import Flag from "react-world-flags";
+
+const GITHUB_USERNAME = "GBobello";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { language, translations, toggleLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme(); // Usando o hook useTheme do next-themes
+  const [repos, setRepos] = useState([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Verifica o tema no localStorage e define a preferência
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
+  }, [setTheme]);
+
+  useEffect(() => {
+    async function fetchRepos() {
+      try {
+        const res = await fetch(
+          `https://api.github.com/users/${GITHUB_USERNAME}/repos`
+        );
+        const data = await res.json();
+        setRepos(data);
+      } catch (error) {
+        console.error("Erro ao buscar repositórios", error);
+      }
+    }
+    fetchRepos();
+  }, []);
+
+  // Função para alternar entre os temas e salvar no localStorage
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme); // Salva a preferência no localStorage
+  };
+
+  return (
+    <div className="container mx-auto max-w-4xl p-6">
+      <div className="flex justify-end">
+        {/* Botão de troca de idioma com bandeiras */}
+        <Button
+          onClick={toggleLanguage}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          {language === "pt" ? (
+            <Flag code="BR" alt="Brazil Flag" className="w-5 h-5" />
+          ) : (
+            <Flag code="US" alt="US Flag" className="w-5 h-5" />
+          )}
+        </Button>
+
+        {/* Botão para alternar entre Dark Mode e Light Mode */}
+        <Button
+          onClick={toggleTheme}
+          variant="outline"
+          className="flex items-center gap-2 ml-4"
+        >
+          {theme === "dark" ? (
+            <Sun className="w-5 h-5" />
+          ) : (
+            <Moon className="w-5 h-5" />
+          )}
+        </Button>
+      </div>
+
+      {/* Perfil */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col items-center gap-4 text-center"
+      >
+        <Avatar className="w-24 h-24 border-4 border-primary shadow-lg">
+          <AvatarImage src="https://github.com/GBobello.png" alt="Avatar" />
+          <AvatarFallback>GB</AvatarFallback>
+        </Avatar>
+        <h1 className="text-2xl font-bold">Gabriel Bobello</h1>
+        <p className="text-muted-foreground">{translations.apresentation}</p>
+
+        {/* Tecnologias */}
+        <div className="flex gap-2 flex-wrap mt-3">
+          <Badge>Delphi</Badge>
+          <Badge>SQL</Badge>
+          <Badge>React</Badge>
+          <Badge>Next.js</Badge>
+          <Badge>TypeScript</Badge>
+          <Badge>Tailwind CSS</Badge>
+          <Badge>Python</Badge>
+          <Badge>HTML</Badge>
+          <Badge>CSS</Badge>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Botões para redes sociais */}
+        <div className="flex gap-2 mt-4">
+          <Button asChild variant="outline" className="mt-4">
+            <a href={`https://github.com/${GITHUB_USERNAME}`} target="_blank">
+              <Github className="w-5 h-5 mr-2" /> GitHub
+            </a>
+          </Button>
+
+          <Button asChild variant="outline" className="mt-4">
+            <a href={"https://linkedin.com/in/bobello"} target="_blank">
+              <Linkedin className="w-5 h-5 ml-2" /> Linkedin
+            </a>
+          </Button>
+        </div>
+      </motion.div>
+
+      {/* Projetos */}
+      <h2 className="text-xl font-semibold mt-10 mb-4">
+        {translations.projects}
+      </h2>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
+        {repos.length > 0 ? (
+          repos.map((repo) => (
+            <Card
+              key={repo.id}
+              className="hover:scale-105 transition-transform"
+            >
+              <CardHeader>
+                <CardTitle className="text-lg">{repo.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm line-clamp-2">
+                  {repo.description
+                    ? repo.description
+                    : translations.nondescription}
+                </p>
+                <Button asChild variant="link" className="mt-2">
+                  <a href={repo.html_url} target="_blank">
+                    {translations.gitmessage}
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <p>Carregando projetos...</p>
+        )}
+      </motion.div>
     </div>
   );
 }

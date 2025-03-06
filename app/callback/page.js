@@ -87,7 +87,9 @@ export default function CallBackPage() {
         <div className="flex items-center justify-center h-screen">
           <div className="bg-red-100 text-red-600 p-4 rounded-lg shadow-md flex items-center gap-2">
             <AlertCircle className="w-6 h-6" />
-            <span>Error: {error}</span>
+            <span>
+              {language === "pt" ? Erro : Error}: {error}
+            </span>
           </div>
         </div>
       </div>
@@ -124,7 +126,7 @@ export default function CallBackPage() {
       </div>
 
       <div className="flex items-center justify-center min-h-screen p-4">
-        <Card className="max-w-2xl w-full shadow-lg border">
+        <Card className="max-w-2xl w-full h-96 shadow-lg border">
           <CardContent className="p-6">
             <h1 className="text-xl font-semibold mb-4">
               {translations.callback}

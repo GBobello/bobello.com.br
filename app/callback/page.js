@@ -127,11 +127,11 @@ export default function CallBackPage() {
 
       <div className="flex items-center justify-center min-h-screen p-4">
         <Card className="max-w-2xl w-full h-96 shadow-lg border">
-          <CardContent className="p-6">
+          <CardContent className="p-6 h-full">
             <h1 className="text-xl font-semibold mb-4">
               {translations.callback}
             </h1>
-            <pre className="p-4 rounded-md text-sm overflow-auto">
+            <pre className="p-4 rounded-md text-sm overflow-auto h-full">
               {JSON.stringify(data, null, 2)}
             </pre>
           </CardContent>

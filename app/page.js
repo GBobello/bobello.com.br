@@ -48,14 +48,65 @@ export default function Home() {
     localStorage.setItem("theme", newTheme); // Salva a preferência no localStorage
   };
 
+  // Função para baixar o PDF do currículo
+  const downloadCurriculo = async () => {
+    try {
+      const response = await fetch("/api/curriculo");
+      if (!response.ok) throw new Error("Erro ao baixar o currículo");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cv_gbobello.pdf";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      alert("Erro ao baixar o currículo");
+    }
+  };
+
   return (
     <div className="container mx-auto max-w-4xl p-6">
       <div className="flex justify-end">
-        {/* Botão de troca de idioma com bandeiras */}
+        <Button
+          onClick={downloadCurriculo}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          {/* Ícone SVG de currículo */}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <rect
+              x="6"
+              y="3"
+              width="12"
+              height="18"
+              rx="2"
+              strokeWidth="2"
+              stroke="currentColor"
+              fill="none"
+            />
+            <path
+              d="M9 7h6M9 11h6M9 15h2"
+              strokeWidth="2"
+              stroke="currentColor"
+              strokeLinecap="round"
+            />
+          </svg>
+          CV
+        </Button>
+
         <Button
           onClick={toggleLanguage}
           variant="outline"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 ml-4"
         >
           {language === "pt" ? (
             <Flag code="BR" alt="Brazil Flag" className="w-5 h-5" />
